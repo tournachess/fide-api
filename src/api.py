@@ -1,12 +1,16 @@
 import requests
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.responses import ORJSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.auth import verify_token
 from src.scraper import fide_scraper
 
-app = FastAPI(default_response_class=ORJSONResponse)
+app = FastAPI(
+    default_response_class=ORJSONResponse,
+    dependencies=[Depends(verify_token)],
+)
 
 app.add_middleware(
   CORSMiddleware,
