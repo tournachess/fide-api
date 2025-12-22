@@ -1,1 +1,1 @@
-uvicorn src.api:app --reload
+uvicorn src.api:app --reload --port 3123
