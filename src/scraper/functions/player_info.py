@@ -1,4 +1,11 @@
+import logging
+
 from bs4 import BeautifulSoup, Tag
+
+from src.scraper.functions.federations import FEDERATION_ABBREV
+
+logger = logging.getLogger(__name__)
+
 
 def get_player_info(html_doc: str):
   soup = BeautifulSoup(html_doc, "html.parser")
@@ -21,10 +28,18 @@ def get_player_info(html_doc: str):
     "blitz_rating": soup.select_one(".profile-blitz > p:nth-child(2)"),
   }
 
+  federation = safely_get_string(player_info_raw["federation"])
+  federation_abbrev = ""
+  if federation:
+    federation_abbrev = FEDERATION_ABBREV.get(federation, "")
+    if not federation_abbrev:
+      logger.error(f"Unknown federation: {federation}")
+
   player_info = {
     "fide_id": safely_get_string(player_info_raw["fide_id"]),
     "fide_title": safely_get_string(player_info_raw["fide_title"]),
-    "federation": safely_get_string(player_info_raw["federation"]),
+    "federation": federation,
+    "federation_abbrev": federation_abbrev,
     "birth_year": safely_get_int(player_info_raw["birth_year"]),
     "sex": safely_get_string(player_info_raw["sex"]),
     "name": safely_get_string(player_info_raw["name"]),
